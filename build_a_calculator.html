@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+
+        .calculator {
+            background: white;
+            border-radius: 24px;
+            box-shadow:
+                    0 10px 30px rgba(0, 0, 0, 0.08),
+                    0 6px 10px rgba(0, 0, 0, 0.05);
+            width: 320px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .calculator:hover {
+            transform: translateY(-5px);
+        }
+
+        .display {
+            background: linear-gradient(135deg, #6a89cc 0%, #4a69bd 100%);
+            color: white;
+            padding: 30px 25px;
+            text-align: right;
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            position: relative;
+        }
+
+        .display::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #ff9a9e 0%, #fad0c4 100%);
+        }
+
+        .previous-operand {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            min-height: 24px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 8px;
+        }
+
+        .current-operand {
+            font-size: 2.8rem;
+            font-weight: 300;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            letter-spacing: 1px;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            padding: 25px;
+            background: #f8f9fa;
+        }
+
+        button {
+            border: none;
+            background: white;
+            color: #4a69bd;
+            font-size: 1.3rem;
+            height: 60px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .operator {
+            background: #4a69bd;
+            color: white;
+        }
+
+        .operator:hover {
+            background: #3c5aa8;
+        }
+
+        .equals {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: white;
+            grid-column: span 2;
+        }
+
+        .equals:hover {
+            background: linear-gradient(135deg, #ff7b81 0%, #f8c0af 100%);
+        }
+
+        .clear, .delete {
+            background: #f8f9fa;
+            color: #6c757d;
+        }
+
+        .clear:hover, .delete:hover {
+            background: #e9ecef;
+        }
+
+        .zero {
+            grid-column: span 2;
+        }
+
+        .footer {
+            text-align: center;
+            color: #6c757d;
+            padding: 15px;
+            font-size: 0.85rem;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .keyboard-hint {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #6a89cc;
+        }
+
+        .keyboard-hint i {
+            font-size: 1rem;
+        }
+
+        .calculator-name {
+            font-weight: 600;
+            color: #4a69bd;
+        }
+
+        @media (max-width: 400px) {
+            .calculator {
+                width: 100%;
+                max-width: 320px;
+            }
+
+            button {
+                height: 55px;
+                font-size: 1.2rem;
+            }
+
+            .current-operand {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="calculator">
+    <div class="display">
+        <div class="previous-operand"></div>
+        <div class="current-operand">0</div>
+    </div>
+
+    <div class="buttons">
+        <button class="clear" data-action="clear">C</button>
+        <button class="delete" data-action="delete"><i class="fas fa-delete-left"></i></button>
+        <button class="operator" data-operation="÷">÷</button>
+        <button class="operator" data-operation="×">×</button>
+
+        <button data-number="7">7</button>
+        <button data-number="8">8</button>
+        <button data-number="9">9</button>
+        <button class="operator" data-operation="-">-</button>
+
+        <button data-number="4">4</button>
+        <button data-number="5">5</button>
+        <button data-number="6">6</button>
+        <button class="operator" data-operation="+">+</button>
+
+        <button data-number="1">1</button>
+        <button data-number="2">2</button>
+        <button data-number="3">3</button>
+        <button class="equals" data-action="calculate">=</button>
+
+        <button class="zero" data-number="0">0</button>
+        <button data-number=".">.</button>
+    </div>
+
+    <div class="footer">
+        <div class="calculator-name">Harmony Calculator</div>
+        <div class="keyboard-hint">
+            <i class="fas fa-keyboard"></i>
+            <span>Keyboard enabled</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const calculator = {
+            displayValue: '0',
+            previousOperand: '',
+            waitingForSecondOperand: false,
+            operator: null
+        };
+
+        const currentOperandElement = document.querySelector('.current-operand');
+        const previousOperandElement = document.querySelector('.previous-operand');
+
+        function updateDisplay() {
+            currentOperandElement.textContent = calculator.displayValue;
+            previousOperandElement.textContent = calculator.previousOperand;
+        }
+
+        function inputDigit(digit) {
+            const { displayValue, waitingForSecondOperand } = calculator;
+
+            if (waitingForSecondOperand) {
+                calculator.displayValue = digit;
+                calculator.waitingForSecondOperand = false;
+            } else {
+                calculator.displayValue = displayValue === '0' ? digit : displayValue + digit;
+            }
+        }
+
+        function inputDecimal(dot) {
+            if (calculator.waitingForSecondOperand) {
+                calculator.displayValue = '0.';
+                calculator.waitingForSecondOperand = false;
+                return;
+            }
+
+            if (!calculator.displayValue.includes(dot)) {
+                calculator.displayValue += dot;
+            }
+        }
+
+        function handleOperator(nextOperator) {
+            const { displayValue, previousOperand, operator } = calculator;
+            const inputValue = parseFloat(displayValue);
+
+            if (operator && calculator.waitingForSecondOperand) {
+                calculator.operator = nextOperator;
+                calculator.previousOperand = `${previousOperand.slice(0, -1)} ${nextOperator}`;
+                return;
+            }
+
+            if (previousOperand === '' && !isNaN(inputValue)) {
+                calculator.previousOperand = `${displayValue} ${nextOperator}`;
+            } else if (operator) {
+                const result = calculate(previousOperand, displayValue, operator);
+
+                calculator.displayValue = `${result}`;
+                calculator.previousOperand = `${result} ${nextOperator}`;
+            }
+
+            calculator.waitingForSecondOperand = true;
+            calculator.operator = nextOperator;
+        }
+
+        function calculate(firstOperand, secondOperand, operator) {
+            const first = parseFloat(firstOperand);
+            const second = parseFloat(secondOperand);
+
+            if (isNaN(first) || isNaN(second)) return 0;
+
+            switch (operator) {
+                case '+':
+                    return first + second;
+                case '-':
+                    return first - second;
+                case '×':
+                    return first * second;
+                case '÷':
+                    if (second === 0) {
+                        alert('Cannot divide by zero');
+                        return 0;
+                    }
+                    return first / second;
+                default:
+                    return second;
+            }
+        }
+
+        function resetCalculator() {
+            calculator.displayValue = '0';
+            calculator.previousOperand = '';
+            calculator.waitingForSecondOperand = false;
+            calculator.operator = null;
+        }
+
+        function deleteLastDigit() {
+            if (calculator.displayValue.length > 1) {
+                calculator.displayValue = calculator.displayValue.slice(0, -1);
+            } else {
+                calculator.displayValue = '0';
+            }
+        }
+
+        function performCalculation() {
+            const { displayValue, previousOperand, operator } = calculator;
+
+            if (operator && !calculator.waitingForSecondOperand) {
+                const firstOperand = previousOperand.split(' ')[0];
+                const result = calculate(firstOperand, displayValue, operator);
+
+                calculator.displayValue = `${result}`;
+                calculator.previousOperand = '';
+                calculator.operator = null;
+                calculator.waitingForSecondOperand = true;
+            }
+        }
+
+        // Button click handlers
+        document.querySelector('.buttons').addEventListener('click', function(event) {
+            const { target } = event;
+
+            if (!target.matches('button')) return;
+
+            if (target.classList.contains('operator')) {
+                handleOperator(target.dataset.operation);
+                updateDisplay();
+                return;
+            }
+
+            if (target.classList.contains('equals')) {
+                performCalculation();
+                updateDisplay();
+                return;
+            }
+
+            if (target.classList.contains('clear')) {
+                resetCalculator();
+                updateDisplay();
+                return;
+            }
+
+            if (target.classList.contains('delete')) {
+                deleteLastDigit();
+                updateDisplay();
+                return;
+            }
+
+            if (target.dataset.number) {
+                if (target.dataset.number === '.') {
+                    inputDecimal(target.dataset.number);
+                } else {
+                    inputDigit(target.dataset.number);
+                }
+                updateDisplay();
+            }
+        });
+
+        // Keyboard support
+        document.addEventListener('keydown', function(event) {
+            const { key } = event;
+
+            if (key >= '0' && key <= '9') {
+                inputDigit(key);
+            } else if (key === '.') {
+                inputDecimal(key);
+            } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+                let operator;
+                switch (key) {
+                    case '+': operator = '+'; break;
+                    case '-': operator = '-'; break;
+                    case '*': operator = '×'; break;
+                    case '/': operator = '÷'; break;
+                }
+                handleOperator(operator);
+            } else if (key === 'Enter' || key === '=') {
+                event.preventDefault();
+                performCalculation();
+            } else if (key === 'Escape' || key === 'Delete') {
+                resetCalculator();
+            } else if (key === 'Backspace') {
+                deleteLastDigit();
+            }
+
+            updateDisplay();
+        });
+
+        // Initialize display
+        updateDisplay();
+    });
+</script>
+</body>
+</html>
